@@ -1,0 +1,24 @@
+# HTTP Cookie File downloaded with cookies.txt by Genuinous @genuinous
+# This file can be used by wget, curl, aria2c and other standard compliant tools.
+# Usage Examples:
+#   1) wget -x --load-cookies cookies.txt "https://www.youtube.com/playlist?list=PLnKNmWNuQnyxZYKYUgLA7ia7VoadgkIGH"
+#   2) curl --cookie cookies.txt "https://www.youtube.com/playlist?list=PLnKNmWNuQnyxZYKYUgLA7ia7VoadgkIGH"
+#   3) aria2c --load-cookies cookies.txt "https://www.youtube.com/playlist?list=PLnKNmWNuQnyxZYKYUgLA7ia7VoadgkIGH"
+#
+.youtube.com	TRUE	/	TRUE	1654570614	VISITOR_INFO1_LIVE	TjanAZ1AaXQ
+.youtube.com	TRUE	/	TRUE	1691369714	LOGIN_INFO	AFmmF2swRQIgK-WR8iD6ot0oL6gceWQRpA7H_2hTUUpjSMc6xjyhCksCIQCCgzrpu9ZRRF3zri7W2NCF2Sf4ehob3MdqQ2zuyFLlxg:QUQ3MjNmd1I5X05wREhKZUVLOFdFRVJOMEQxdWlNTTdxV1BGSUJoSDRYRXdVb3Z5enFaajBYYW1ZS1VXaFdQeHFCdFBTQ2ZJQjVwRmRVdlRzVjFhMDdKcWZFR1kyb05LM0EzVUdZUGVRVU5qSGplZTBCaVVta3JhbzdsSVBvRWZ0ZGhtNjl1c0FaeTZtS1dLR0JpdTlOMTNZZ0VsZEFSUUQya285d2V0emhQeUdJRmRlMEdRR1VESXZwczZVcnFoSEJQNXRYcGZJOEYtUTR0OXpRY3hkTi0zUGtjbktTOURfUQ==
+.youtube.com	TRUE	/	TRUE	1647749601	NID	223=x0rN9e_gPeQZpgQdPnGgcmxsylTCrqz_CfGDjfGqTnKpcdLRKH07Z55uiZIEyIGyAIk-VHYcbsIfIveAbvvs9hhO0WfbzmcMRe1WBolXRA4yR62EFWVVILv2OoMCwKSvhPFmtXgY6IiByhxLmX3I-jfLaXsTeRnk1z85z8GFIpw
+.youtube.com	TRUE	/	FALSE	1702054035	HSID	AgKqsB3uQvnVmeaet
+.youtube.com	TRUE	/	TRUE	1702054035	SSID	App1Xq_f5fEc4od-_
+.youtube.com	TRUE	/	FALSE	1702054035	APISID	cpbBA4_m7rja5rwg/A1lg6yejM-RCp_KDA
+.youtube.com	TRUE	/	TRUE	1702054035	SAPISID	P7Y3Yn-_YA90i3mD/AXdMxQyGFtTMk2FS0
+.youtube.com	TRUE	/	TRUE	1702054035	__Secure-1PAPISID	P7Y3Yn-_YA90i3mD/AXdMxQyGFtTMk2FS0
+.youtube.com	TRUE	/	TRUE	1702054035	__Secure-3PAPISID	P7Y3Yn-_YA90i3mD/AXdMxQyGFtTMk2FS0
+.youtube.com	TRUE	/	TRUE	1665772614	__Secure-1PSIDCC	AJi4QfEV88abmqSdbk6W33iKB0QhrAxorkOWoNl3Xc0ZiEQx0glSEPBXCnSoNvkrI6lzfuta67E
+.youtube.com	TRUE	/	TRUE	1702329722	PREF	f6=480&amp;volume=100&amp;tz=America.Los_Angeles&amp;f5=30000&amp;repeat=ONE&amp;library_tab_browse_id=FEmusic_liked_playlists&amp;f4=4000000
+.youtube.com	TRUE	/	FALSE	1702054035	SID	EggWEK2eqavV8oekJTd6-2tRRngq_0QHHuEK_UjoWcQzbB_RuUSqeHvDEdPfvMeMF-6dYA.
+.youtube.com	TRUE	/	TRUE	1702054035	__Secure-1PSID	EggWEK2eqavV8oekJTd6-2tRRngq_0QHHuEK_UjoWcQzbB_RI6XaD4r6oGWQv5fOkLHRFg.
+.youtube.com	TRUE	/	TRUE	1702054035	__Secure-3PSID	EggWEK2eqavV8oekJTd6-2tRRngq_0QHHuEK_UjoWcQzbB_R1j7zQ4IADh1oqXB5R9MB9g.
+.youtube.com	TRUE	/	TRUE	0	YSC	YvLfuYXMJZ4
+.youtube.com	TRUE	/	FALSE	1670793753	SIDCC	AJi4QfEsU_jwW9MKTBYiEdK_mKxqXcav8F3UYDcxkpt4dFXiyvpAhSs2qPov2jdE2DgvGUV_oCA
+.youtube.com	TRUE	/	TRUE	1670793753	__Secure-3PSIDCC	AJi4QfFbiVEjWbScAGuGWh0lV86ZETL4WBQ0azJmYWFZs0JDjLSNHRJeXdqLxtzAlwyMHXCtIdM
