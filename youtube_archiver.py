@@ -1,9 +1,9 @@
 import json
 import os
 
-import google_auth_oauthlib.flow
-import googleapiclient.discovery
-import googleapiclient.errors
+# import google_auth_oauthlib.flow
+# import googleapiclient.discovery
+# import googleapiclient.errors
 import requests
 import youtube_dl
 import argparse
@@ -107,6 +107,7 @@ class CreatePlaylist:
             "writeinfojson": store_json,
             "skip_download": True,
             "verbose": False,
+            "nocheckcertificate": True,
             }
         # if proxy:
         #     ydl_opts['yes-playlist']=True
@@ -140,24 +141,22 @@ class CreatePlaylist:
 
     def process_video_item(self, video_item, dryrun=False):
         try:
-            print("track used")
-            song_name = video_item["track"]
-            artist = video_item["artist"]
-            print(artist, song_name)
-        except KeyError:
-            if video_item["title"]:
-                print("Parser Input", video_item["title"])
+           if video_item["title"]:
+                # print("Parser Input", video_item["title"])
                 if get_artist_title(str(video_item["title"])) is not None:
                     artist, song_name = get_artist_title(str(video_item["title"]))
-                    print(artist, song_name, "parser used")
+                    # print(artist, song_name, "parser used")
                 else:
                     song_name = None
                     artist = None
-
-                
-            else:
-                song_name = None
-                artist = None
+        except KeyError:
+            # print("track used")
+            song_name = video_item["track"]
+            artist = video_item["artist"]
+            if song_name is None or artist is None:
+                    song_name = None
+                    artist = None
+ 
         # if dryun:
         #     return None
         # else:
@@ -188,7 +187,7 @@ class CreatePlaylist:
              
     def build_spotify_uris(self, artist, song_name):
         """Build Spotify URI Array"""
-
+        print("Input for URI used", artist, song_name)
         spotify_uri = self.get_spotify_uri(artist, song_name)
         if spotify_uri is not None:
             # save all important info and skip any missing song and artist
@@ -200,7 +199,7 @@ class CreatePlaylist:
             # add the uri, easy to get song to put into playlist
             "spotify_uri": spotify_uri
             }
-        print(spotify_uri)
+        # print("URI found")
 
     def create_spotify_playlist(self, playlist_name,):
         """Create A New Playlist"""
@@ -248,7 +247,7 @@ class CreatePlaylist:
             return None
         else:
             uri = songs[0]['uri']
-            print(uri)
+            # zprint(uri)
             return uri
 
     def archive_youtube_playlist(self, youtube_url, playlist_name, ydl_opts):
