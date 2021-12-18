@@ -5,3 +5,9 @@ youtubedl.py
  __pycache__
  .DS_Store
  XG4mx/**
+G4mx/**
+__pycache__/**
+.vscode/**
+cookies.txt
+secrets.py
+clientsecrets.json
