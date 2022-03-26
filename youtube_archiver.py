@@ -5,7 +5,7 @@ import os
 # import googleapiclient.discovery
 # import googleapiclient.errors
 import requests
-import youtube_dl
+import yt_dlp
 import argparse
 import configparser
 
@@ -163,7 +163,7 @@ class CreatePlaylist:
         if song_name is not None and artist is not None:
             self.build_spotify_uris(artist, song_name)
 
-    def youtube_dl_call(self, youtube_url, ydl_opts):
+    def yt_dlp_call(self, youtube_url, ydl_opts):
 
         """Call youtube-dl module"""
  
@@ -172,11 +172,11 @@ class CreatePlaylist:
             ydl_opts['yes-playlist']=True
 
             
-        # use youtube_dl to collect the song name & artist name
+        # use yt_dlp to collect the song name & artist name
         """
         Return a list with a dictionary for each video extracted.       
         """
-        video_list = youtube_dl.YoutubeDL(ydl_opts).extract_info(
+        video_list = yt_dlp.YoutubeDL(ydl_opts).extract_info(
             youtube_url, download=True)
         dryrun = False
         try:
@@ -255,7 +255,7 @@ class CreatePlaylist:
         # populate dictionary of songs from youtube link
         if playlist_name:
             playlist_name = playlist_name
-        self.youtube_dl_call(youtube_url, ydl_opts)
+        self.yt_dlp_call(youtube_url, ydl_opts)
         #if args.dryrun == False:
         self.save_to_spotify(playlist_name)
 
