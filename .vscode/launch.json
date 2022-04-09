@@ -11,6 +11,11 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "subProcess": true,
+            "args": [
+               "--cookies", "/Users/ehernand/Downloads/youtube.com_cookies.txt",
+                "--playlist", "2022_02_Latest",
+                "-u", "https://www.youtube.com/playlist\?list\=PLnKNmWNuQnyzRKXo_rUy1UYRqEpb7H1rp",
+            ]
         }
     ]
 }
