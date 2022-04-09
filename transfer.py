@@ -65,12 +65,6 @@ def get_args():
             help="Location of archive reference file",
         )
         parser.add_argument(
-            "--spotify_token",
-            type=str,
-            required=False,
-            help="Spotify API Key.",
-        )
-        parser.add_argument(
             "--cookies",
             type=str,
             required=True,

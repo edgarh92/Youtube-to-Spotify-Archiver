@@ -1,9 +1,3 @@
-client_secret.json
-clientsecrets.json
-secrets.py
-youtubedl.py
- __pycache__
- .DS_Store
- XG4mx/**
-G4mx/**
-__pycache__/**
+.cache*
+__pycache__
+.env
