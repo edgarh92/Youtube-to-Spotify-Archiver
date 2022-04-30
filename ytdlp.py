@@ -8,7 +8,7 @@ class yt_dlp:
     def __init__(self):
         self.videoinfo = ""
 
-    def processVideoTrack(self, video_item):
+    def processVideoTrack(self, video_item) -> tuple:
         '''Process a dictionary of metadata and return None or song_name, artist'''
         try:
             song_name = video_item["track"]
@@ -18,7 +18,7 @@ class yt_dlp:
         except KeyError as EmptyValue:
             return None, None
 
-    def call_yt_dlp(self, video_id, ydl_opts):
+    def call_yt_dlp(self, video_id, ydl_opts) -> dict:
         ydl_opts = ydl_opts
 
         youtube_url = "https://www.youtube.com/watch?v=" + video_id
