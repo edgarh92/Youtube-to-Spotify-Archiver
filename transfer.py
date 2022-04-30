@@ -2,13 +2,14 @@ from spotify import Spotify
 from youtube import Youtube
 from datetime import datetime
 import argparse
+from logger import setup_logger
 
 def build_ydl_opts(cookies_file, archive_file, output_location,store_json):
+    json_out_format = "/%(playlist_title)s/%(playlist_index)s_%(id)s_%(title)s.%(ext)s"
     ydl_opts = {
-
         "cookiefile": cookies_file,
         "download_archive": archive_file,
-        "outtmpl": (output_location + "/%(playlist_title)s/%(playlist_index)s_%(id)s_%(title)s.%(ext)s"),
+        "outtmpl": (output_location + json_out_format),
         "quiet": True,
         "ignore_errors": True,
         "writeinfojson": store_json,
@@ -84,10 +85,13 @@ def main():
     sp = Spotify()
     yt = Youtube()
     youtube_url, playlist_name, ydl_opts = get_args()
+    archive_logger = setup_logger(__name__)
+    
 
     yt_playlist_id = youtube_url
     spotify_playlist_name = playlist_name
     spotify_playlist_id = sp.create_playlist(spotify_playlist_name)
+    archive_logger.info(f'URL:{youtube_url}')
     
     songs = yt.get_songs_from_playlist(yt_playlist_id, ydl_opts)
 
@@ -95,16 +99,16 @@ def main():
         song_uri = sp.get_song_uri(song.artist, song.title)
 
         if not song_uri:
-            print(f"{song.artist} - {song.title} was not found!")
+            archive_logger.error(f"{song.artist} - {song.title} was not found!")
             continue
         
         was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
 
         if was_added:
-            print(f'{song.artist} - {song.title} was added to playlist.')
+            archive_logger.info(f'{song.artist} - {song.title} was added to playlist.')
 
     total_songs_added = sp._num_playlist_songs(spotify_playlist_id)
-    print(f'Added {total_songs_added} songs out of {len(songs)}')
+    archive_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
 
 if __name__ == "__main__":
     main()

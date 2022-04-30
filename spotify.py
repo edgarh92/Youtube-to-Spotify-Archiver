@@ -1,8 +1,10 @@
 from pprint import pprint
+from unicodedata import name
 from spotipy import util
 import spotipy
 import requests
 import os
+from logger import setup_logger
 
 
 class SpotifyClientManager:
@@ -30,6 +32,7 @@ class SpotifyClientManager:
 class Spotify:
     def __init__(self):
         self.spotify = SpotifyClientManager()
+        self.spotify_logger = setup_logger(__name__)
 
     def create_playlist(self, playlist_name: str) -> str:
         request_body = {
@@ -53,8 +56,9 @@ class Spotify:
         return playlist['id']
 
     def get_song_uri(self, artist: str, song_name: str) -> 'str':
-        q = f'artist:{artist} track:{song_name}'
-        query = f'https://api.spotify.com/v1/search?q={q}&type=track&limit=1'
+        track_request = f'track:{song_name} {artist}'
+        query = f'https://api.spotify.com/v1/search?q={track_request}&type=track&limit=10'
+        self.spotify_logger.debug(f'Query arguments: {query}')
 
         response = requests.get(
             query,
@@ -65,11 +69,12 @@ class Spotify:
         )
 
         if not response.ok:
+            self.spotify_logger.debug(f"Response Code: {response.ok}")
             return None
 
         results = response.json()
         items = results['tracks']['items']
-
+        #self.spotify_logger.debug(f"TOTAL TRACKS {results['tracks']['items'][0]['name']}")
         if not items:
             return None
 
@@ -99,6 +104,7 @@ class Spotify:
         )
 
         if not response.ok:
+            self.spotify_logger.error("Bad API Response")
             return print("Bad Response.")
         
         results = response.json()
@@ -109,6 +115,7 @@ class Spotify:
 
 
 if __name__ == "__main__":
+
     sp = Spotify()
     pid = sp.create_playlist("loll")
     uri = sp.get_song_uri('flor', 'hold on')
