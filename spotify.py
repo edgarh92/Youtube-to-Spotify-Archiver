@@ -1,10 +1,12 @@
 from pprint import pprint
 from unicodedata import name
+from unittest import result
 from spotipy import util
 import spotipy
-import requests
+import requests 
 import os
 from logger import setup_logger
+from urllib.parse import quote
 
 
 class SpotifyClientManager:
@@ -56,7 +58,7 @@ class Spotify:
         return playlist['id']
 
     def get_song_uri(self, artist: str, song_name: str) -> 'str':
-        track_request = f'track:{song_name} {artist}'
+        track_request = quote(f'track:{song_name} {artist}')
         query = f'https://api.spotify.com/v1/search?q={track_request}&type=track&limit=10'
         self.spotify_logger.debug(f'Query arguments: {query}')
 
@@ -74,11 +76,22 @@ class Spotify:
 
         results = response.json()
         items = results['tracks']['items']
-        #self.spotify_logger.debug(f"TOTAL TRACKS {results['tracks']['items'][0]['name']}")
+        result_length = len(items)
         if not items:
             return None
+        elif result_length == 1:
+            items[0]['uri']
+        else:
+            for i in range(result_length): #  TODO: Use items() method for parsing.
+                artist_result = results['tracks']['items'][i]['artists'][0]['name']
 
-        return items[0]['uri']
+                if artist_result.lower() != artist.lower():
+                    self.spotify_logger.debug(
+                        f'API: {artist_result} Input: {artist}') #  TODO: use this data to return proper URI
+                else:
+                    return items[i]['uri']
+
+        
 
     def add_song_to_playlist(self, song_uri: str, playlist_id: str) -> bool:
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
