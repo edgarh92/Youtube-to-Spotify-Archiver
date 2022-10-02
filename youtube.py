@@ -18,7 +18,7 @@ class Error(Exception):
     pass
 
 
-class YtDlpError(Error):
+class YtDlpParseError(Error):
     '''Raised when yt-dlp library does not contain information needed'''
     pass
 
@@ -53,6 +53,18 @@ class Youtube:
             developerKey=Youtube.DEVELOPER_KEY
         )
 
+    def __get_artist_title_ytdlp(self, video_id, ydl_opts):
+        ytdl = VideoTitleExtractor()
+        video_info = ytdl.call_yt_dlp(video_id, ydl_opts)
+        track_info = {}
+
+        track_info['artist'], track_info['title'] = ytdl.process_video_track(
+            video_info)
+        if track_info['artist'] and track_info['title']:
+            return track_info
+        else:
+            return None
+
     def __fetch_songs(self, youtube, playlist_id, ydl_opts, page_token=None):
         """
         Calls Youtube API playlistItems to obtain title and video id
@@ -79,16 +91,20 @@ class Youtube:
             song = item['snippet']['title']
             video_id = item['snippet']['resourceId']['videoId']
             print(f'Youtube API Info: {song}, {video_id}')
-            
             try:
-                ytdl = VideoTitleExtractor()
-                video_info = ytdl.call_yt_dlp(video_id, ydl_opts)
-                artist, title = ytdl.process_video_track(video_info)
-                if artist is not None and title is not None:
-                    self.songs.append(clean_song_info(Song(artist, title)))
+                track_info = self.__get_artist_title_ytdlp(
+                    video_id,
+                    ydl_opts)
+                if not track_info:
+                    raise YtDlpParseError
                 else:
-                    raise YtDlpError
-            except YtDlpError:
+                    self.songs.append(clean_song_info(
+                        Song(
+                            str(track_info['artist']),
+                            str(track_info['title'])))
+                            )
+
+            except YtDlpParseError:
                 try:  #  TODO: Handle none for artist. 
                     artist, title = get_artist_title(song)
                     self.songs.append(clean_song_info(
