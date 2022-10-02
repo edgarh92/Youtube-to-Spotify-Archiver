@@ -79,17 +79,8 @@ class Spotify:
         result_length = len(items)
         if not items:
             return None
-        elif result_length == 1:
-            items[0]['uri']
         else:
-            for i in range(result_length): #  TODO: Use items() method for parsing.
-                artist_result = results['tracks']['items'][i]['artists'][0]['name']
-
-                if artist_result.lower() != artist.lower():
-                    self.spotify_logger.debug(
-                        f'API: {artist_result} Input: {artist}') #  TODO: use this data to return proper URI
-                else:
-                    return items[i]['uri']
+            return items[0]['uri']
 
         
 
