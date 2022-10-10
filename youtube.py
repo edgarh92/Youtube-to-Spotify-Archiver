@@ -28,7 +28,19 @@ class SongInfoNotFound(Error):
     pass
 
 
-def clean_song_info(song: Song) -> Song:
+def clean_song_info(song: Song) -> Type(Song):
+    """Removes common noise in string of a track
+
+    Args:
+        song (Song): Describes artsit and title as track string type
+
+    Returns:
+        Song: Cleaned up dataclass
+   Examples:
+            >>> clean_song_info('Macroblank', '痛みの永 ft Kamo (痛)')
+                Song.artist('Macroblank')
+                Song.title('痛みの永 Kamo')
+    """
     artist, title = song.artist, song.title
     title = re.sub('\(.*', '', title)          # Remove everything after '(' including '('
     title = re.sub('ft.*', '', title)          # Remove everything after 'ft' including 'ft'
@@ -37,7 +49,7 @@ def clean_song_info(song: Song) -> Song:
     artist = re.sub('\(.*', '', artist)        # Remove everything after '(' including '('
     artist = re.sub('ft.*', '', artist)        # Remove everything after 'ft' including 'ft'
     artist = re.sub(',.*', '', artist)         # Remove everything after ',' including ','
-    return Song(artist.strip(), title.strip()) # Remove whitespaces from start and end
+    return Song(artist.strip(), title.strip())  # Remove whitespaces from start and end
 
 
 class Youtube:

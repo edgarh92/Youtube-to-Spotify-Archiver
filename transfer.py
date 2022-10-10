@@ -6,7 +6,7 @@ import argparse
 from logger import setup_logger
 
 
-def build_ydl_opts(cookies_file, archive_file, output_location, store_json)-> dict[str, Any]:
+def build_ydl_opts(cookies_file: str, archive_file: str, output_location: str, store_json: bool)-> dict[str, Any]:
     json_out_format = "/%(playlist_title)s/\
         %(playlist_index)s_%(id)s_%(title)s.%(ext)s"
     ydl_opts = {
@@ -53,7 +53,8 @@ def get_args():
         type=str,
         default=year_month,
         required=False,
-        help="Save to specific Spotify Playlist (Default: Youtube Playlist Name)",
+        help="Save to specific Spotify Playlist \
+            (Default: Youtube Playlist Name)",
     )
     parser.add_argument(
         "--store_json",
@@ -81,7 +82,11 @@ def get_args():
     cookies_file = args.cookies
     playlist_name = args.playlist
 
-    ydl_opts = build_ydl_opts(cookies_file, args.archive, args.output, args.store_json)
+    ydl_opts = build_ydl_opts(
+        cookies_file,
+        args.archive,
+        args.output,
+        args.store_json)
 
     return youtube_url, playlist_name, ydl_opts
 

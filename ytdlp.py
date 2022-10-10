@@ -8,7 +8,7 @@ class VideoTitleExtractor:
     def __init__(self):
         self.videoinfo = ""
 
-    def process_video_track(self, video_item) -> tuple:
+    def process_video_track(self, video_item: dict) -> tuple:
         '''Process a dictionary of metadata and return None or song_name, artist'''
         try:
             song_name = video_item["track"]
