@@ -28,7 +28,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--url",
-            "-u",
+        "-u",
         type=str,
         required=True,
         help="Link to Video or Song URL",

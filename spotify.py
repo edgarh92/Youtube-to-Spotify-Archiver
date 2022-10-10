@@ -58,7 +58,7 @@ class Spotify:
         return playlist['id']
 
     def get_song_uri(self, artist: str, song_name: str) -> 'str':
-        track_request = quote(f'track:{song_name} {artist}')
+        track_request = quote(f'{song_name} {artist}')  # TODO: intercept None types as nulls and exit search. 
         query = f'https://api.spotify.com/v1/search?q={track_request}&type=track&limit=10'
         self.spotify_logger.debug(f'Query arguments: {query}')
 
