@@ -1,12 +1,10 @@
-from pprint import pprint
-from unicodedata import name
-from unittest import result
 from spotipy import util
 import spotipy
 import requests 
 import os
 from logger import setup_logger
 from urllib.parse import quote
+from utils import fuzzy_match_artist, artist_names_from_result
 
 
 class SpotifyClientManager:
@@ -75,8 +73,15 @@ class Spotify:
             return None
 
         results = response.json()
+        
         items = results['tracks']['items']
-        result_length = len(items)
+        
+        artist_names = artist_names_from_result(items)
+        track_name = f'{artist}'
+        fuzzy_match_artist(
+            artist_names=artist_names,
+            track_input=track_name)
+
         if not items:
             return None
         else:

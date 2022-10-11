@@ -28,7 +28,7 @@ class SongInfoNotFound(Error):
     pass
 
 
-def clean_song_info(song: Song) -> Type(Song):
+def clean_song_info(song: Song) -> type(Song):
     """Removes common noise in string of a track
 
     Args:
@@ -100,9 +100,9 @@ class Youtube:
             pageToken=page_token
         ).execute()
         for item in result['items']:
-            song = item['snippet']['title']
+            song_api_data = item['snippet']['title']
             video_id = item['snippet']['resourceId']['videoId']
-            print(f'Youtube API Info: {song}, {video_id}')
+            print(f'Youtube API Info: {song_api_data}, {video_id}')
             try:
                 track_info = self.__get_artist_title_ytdlp(
                     video_id,
@@ -118,13 +118,15 @@ class Youtube:
 
             except YtDlpParseError:
                 try:  #  TODO: Handle none for artist. 
-                    artist, title = get_artist_title(song)
-                    self.songs.append(clean_song_info(
-                        Song(str(artist), str(title))))
+                    artist, title = get_artist_title(song_api_data)
+                    if not artist or not title:
+                        raise SongInfoNotFound
+                    else:
+                        self.songs.append(clean_song_info(
+                            Song(str(artist), str(title))))
                 except SongInfoNotFound:
-                    print(f'Error parsing Track and Title {song}')
-                    print(f'Error parsing title {song}')
-                    continue
+                    print(f'Error parsing Track and Title {song_api_data}')
+                    print(f'Error parsing title {song_api_data}')
         return result
 
     def get_songs_from_playlist(self, playlist_id: str, ydl_opts):
