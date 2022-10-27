@@ -4,7 +4,8 @@ import requests
 import os
 from logger import setup_logger
 from urllib.parse import quote
-from utils import fuzzy_match_artist, artist_names_from_result
+from app.utils import fuzzy_match_artist, artist_names_from_result
+from typing import Literal, Any
 
 
 class SpotifyClientManager:
@@ -73,9 +74,9 @@ class Spotify:
             return None
 
         results = response.json()
-        
+
         items = results['tracks']['items']
-        
+
         artist_names = artist_names_from_result(items)
         track_name = f'{artist}'
         fuzzy_match_artist(
@@ -86,8 +87,6 @@ class Spotify:
             return None
         else:
             return items[0]['uri']
-
-        
 
     def add_song_to_playlist(self, song_uri: str, playlist_id: str) -> bool:
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
@@ -100,8 +99,8 @@ class Spotify:
             }
         )
         return response.ok
-    
-    def _num_playlist_songs(self, playlist_id):
+
+    def _num_playlist_songs(self, playlist_id) -> Any | Literal[False] | None:
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
 
         response = requests.get(
@@ -114,19 +113,9 @@ class Spotify:
 
         if not response.ok:
             self.spotify_logger.error("Bad API Response")
-            return print("Bad Response.")
-        
+            return response.ok
+
         results = response.json()
         if 'total' in results:
             return results['total']
-        
         return None
-
-
-if __name__ == "__main__":
-
-    sp = Spotify()
-    pid = sp.create_playlist("loll")
-    uri = sp.get_song_uri('flor', 'hold on')
-    res = sp.add_song_to_playlist(uri, pid)
-    print(sp._num_playlist_songs('7oVpkyA59PIMtE4Bd1Oi2n'))
