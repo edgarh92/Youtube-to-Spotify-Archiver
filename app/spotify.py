@@ -4,7 +4,7 @@ import requests
 import os
 from logger import setup_logger
 from urllib.parse import quote
-from app.utils import fuzzy_match_artist, artist_names_from_result
+from utils import fuzzy_match_artist, artist_names_from_result
 from typing import Literal, Any
 
 
@@ -34,7 +34,7 @@ class Spotify:
     def __init__(self):
         self.spotify = SpotifyClientManager()
         self.spotify_logger = setup_logger(__name__)
-
+        print(self.spotify.token)
     def create_playlist(self, playlist_name: str) -> str:
         request_body = {
             "name": playlist_name,
@@ -54,6 +54,7 @@ class Spotify:
         )
 
         playlist = response.json()
+        print(response.json())
         return playlist['id']
 
     def get_song_uri(self, artist: str, song_name: str) -> 'str':

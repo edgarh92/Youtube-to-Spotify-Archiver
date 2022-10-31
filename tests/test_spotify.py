@@ -1,4 +1,4 @@
-from app.spotify import Spotify, SpotifyClientManager
+from app.spotify import Spotify
 import pytest
 from requests import Response
 

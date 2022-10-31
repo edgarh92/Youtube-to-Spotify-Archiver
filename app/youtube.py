@@ -57,27 +57,27 @@ class Youtube:
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
 
-    def __init__(self):
+    def __init__(self, ydl_input_ops: dict):
         self.songs = []
         self.youtube = build(
             Youtube.YOUTUBE_API_SERVICE_NAME,
             Youtube.YOUTUBE_API_VERSION,
             developerKey=Youtube.DEVELOPER_KEY
         )
+        self.ytdl = VideoTitleExtractor(ydl_input_ops)
 
-    def __get_artist_title_ytdlp(self, video_id, ydl_opts):
-        ytdl = VideoTitleExtractor()
-        video_info = ytdl.call_yt_dlp(video_id, ydl_opts)
+    def __get_artist_title_ytdlp(self, video_id):
+        video_info = self.ytdl.call_yt_dlp(video_id)
         track_info = {}
 
-        track_info['artist'], track_info['title'] = ytdl.process_video_track(
+        track_info['artist'],track_info['title'] = self.ytdl.process_video_track(
             video_info)
         if track_info['artist'] and track_info['title']:
             return track_info
         else:
             return None
 
-    def __fetch_songs(self, youtube, playlist_id, ydl_opts, page_token=None):
+    def __fetch_songs(self, youtube, playlist_id, page_token=None):
         """
         Calls Youtube API playlistItems to obtain title and video id
         Parses the title to obtain artist and song name. 
@@ -87,7 +87,7 @@ class Youtube:
         Args:
             youtube (Youtube): Youtube API Class
             playlist_id (string): String identifier of playlist. 
-            ydl_opts (Dict): Arguments of yt-dlp command line call. 
+            ydl_input_ops (Dict): Arguments of yt-dlp command line call. 
             page_token (_type_, optional): _description_. Defaults to None.
 
         Returns:
@@ -105,8 +105,7 @@ class Youtube:
             print(f'Youtube API Info: {song_api_data}, {video_id}')
             try:
                 track_info = self.__get_artist_title_ytdlp(
-                    video_id,
-                    ydl_opts)
+                    video_id,)
                 if not track_info:
                     raise YtDlpParseError
                 else:
@@ -129,9 +128,9 @@ class Youtube:
                     print(f'Error parsing title {song_api_data}')
         return result
 
-    def get_songs_from_playlist(self, playlist_id: str, ydl_opts):
+    def get_songs_from_playlist(self, playlist_id: str):
         youtube = self.youtube
-        result = self.__fetch_songs(youtube, playlist_id, ydl_opts)
+        result = self.__fetch_songs(youtube, playlist_id)
         while 'nextPageToken' in result:  # Executes until no more pages.
             page_token = result['nextPageToken']
             result = self.__fetch_songs(youtube, playlist_id, page_token)
