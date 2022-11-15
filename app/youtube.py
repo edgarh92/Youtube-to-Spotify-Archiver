@@ -1,4 +1,4 @@
-from youtube_title_parse import get_artist_title
+from youtube_title_parse import get_artist_title #  TODO: Handle missing dependency 
 from googleapiclient.discovery import build
 from ytdlp import VideoTitleExtractor
 from dataclasses import dataclass
