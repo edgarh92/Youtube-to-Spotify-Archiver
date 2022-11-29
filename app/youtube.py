@@ -1,5 +1,5 @@
 from youtube_title_parse import get_artist_title #  TODO: Handle missing dependency 
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build, Resource
 from ytdlp import VideoTitleExtractor
 from dataclasses import dataclass
 from pprint import pprint
@@ -53,6 +53,17 @@ def clean_song_info(song: Song) -> type(Song):
 
 
 class Youtube:
+    """Builds Youtube API connection 
+    Requires:
+        DEVELOPER_KEY,
+        YOUTUBE_API_SERVICE_NAME,
+        YOUTUBE_API_VERSION
+
+    Raises:
+        YtDlpParseError: _description_
+        SongInfoNotFound: _description_
+
+    """    
     DEVELOPER_KEY = os.getenv('YOUTUBE_API_KEY')
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
@@ -67,7 +78,7 @@ class Youtube:
         self.ytdl = VideoTitleExtractor(ydl_input_ops)
 
     def __get_artist_title_ytdlp(self, video_id):
-        video_info = self.ytdl.call_yt_dlp(video_id)
+        video_info = self.ytdl.get_yt_metadata(video_id)
         track_info = {}
 
         track_info['artist'],track_info['title'] = self.ytdl.process_video_track(
@@ -77,9 +88,18 @@ class Youtube:
         else:
             return None
 
-    def __fetch_songs(self, youtube, playlist_id, page_token=None):
+    def __fetch_playlist_name(self, youtube: Resource, playlist_id, page_token=None) -> str:
+        result = youtube.playlists().list(
+            part="snippet", 
+            id=playlist_id,
+            maxResults="300",
+            pageToken=page_token
+        ).execute()
+        return result['items'][0]['snippet']['title']
+
+    def __fetch_songs(self, youtube: Resource, playlist_id, page_token=None):
         """
-        Calls Youtube API playlistItems to obtain title and video id
+        Calls Youtube API playlistItems to obtain title and video id and populate song list (@ Youtube.songs)
         Parses the title to obtain artist and song name. 
         Priority via yt-dlp first for song and artist metadata. 
         Fallback to youtube_title_parser libary to obtain song,artist
@@ -93,12 +113,14 @@ class Youtube:
         Returns:
             result: contains nextPageToken if more than 300 items were found. 
         """
+
         result = youtube.playlistItems().list(
             part="snippet", 
             playlistId=playlist_id,
             maxResults="300",
             pageToken=page_token
         ).execute()
+
         for item in result['items']:
             song_api_data = item['snippet']['title']
             video_id = item['snippet']['resourceId']['videoId']
@@ -129,6 +151,12 @@ class Youtube:
         return result
 
     def get_songs_from_playlist(self, playlist_id: str):
+        """Execute search for video items from playlistItems or YoutubeDLP
+        Args:
+            playlist_id (str): Youtube Playilst ID
+        Returns:
+            songs (list): list of all songs found using ytldp or Youtube API
+        """        
         youtube = self.youtube
         result = self.__fetch_songs(youtube, playlist_id)
         while 'nextPageToken' in result:  # Executes until no more pages.
@@ -136,6 +164,17 @@ class Youtube:
             result = self.__fetch_songs(youtube, playlist_id, page_token)
         return self.songs
 
+    def get_playlist_title(self, playlist_id: str):
+        """_summary_
+
+        Args:
+             playlist_id (str): Youtube Playilst ID
+
+        Returns:
+            playist_title (str): The playlist's title.
+        """        
+        youtube = self.youtube
+        return self.__fetch_playlist_name(youtube, playlist_id)
 
 if __name__ == "__main__":
     yt = Youtube()

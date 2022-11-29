@@ -24,8 +24,16 @@ class VideoTitleExtractor:
         except (KeyError, MetaDataNotAvailable) as EmptyValue:
             return None, None
 
-    def call_yt_dlp(self, video_id: str) -> dict:
-        youtube_url = "https://www.youtube.com/watch?v=" + video_id
+    def get_yt_metadata(self, video_id: str) -> dict:
+        """Run ytdlp library on given Youtube video id and return video metadata
+
+        Args:
+            video_id (str): Youtube video id
+
+        Returns:
+            dict: ytdlp response
+        """        
+        youtube_url = f'https://www.youtube.com/watch?v={video_id}'
         video_info = yt_dlp.YoutubeDL(self.yt_opts).extract_info(
                         youtube_url, download=True)
         return video_info

@@ -50,15 +50,16 @@ def get_args():
     )
     parser.add_argument(
         "--dryrun",
-        action="store_false",
+        action="store_true",
         required=False,
-        help="Do not add to Spotify and download.",
+        default=False,
+        help="Do not add to Spotify.",
     )
     parser.add_argument(
         "-playlist",
         "--playlist",
         type=str,
-        default=year_month,
+        default=None,
         required=False,
         help="Save to specific Spotify Playlist \
             (Default: Youtube Playlist Name)",
@@ -88,6 +89,7 @@ def get_args():
     youtube_url = args.url
     cookies_file = args.cookies
     playlist_name = args.playlist
+    
 
     ydl_opts = build_ydl_opts(
         cookies_file,
@@ -95,21 +97,27 @@ def get_args():
         args.output,
         args.store_json)
 
-    return youtube_url, playlist_name, ydl_opts
+    return youtube_url, playlist_name, ydl_opts, args.dryrun
 
 
 def main():
-    youtube_url, playlist_name, ydl_opts = get_args()
+    youtube_url, playlist_name, ydl_opts, dryrun = get_args()
     sp = Spotify()
     yt = Youtube(ydl_input_ops=ydl_opts)
     archive_logger = setup_logger(__name__)
     
     yt_playlist_id = youtube_url
-    spotify_playlist_name = playlist_name
-    spotify_playlist_id = sp.create_playlist(spotify_playlist_name)
+
+    if not playlist_name:
+        playlist_name = yt.get_playlist_title(yt_playlist_id)
+    if not dryrun: #   TODO: Repeating code. Clean up
+        print("INFO: Dryrun")
+        spotify_playlist_name = playlist_name
+        spotify_playlist_id = sp.create_playlist(spotify_playlist_name)
     archive_logger.info(f'URL:{youtube_url}')
     
     songs = yt.get_songs_from_playlist(yt_playlist_id)
+
 
     for song in songs:
         song_uri = sp.get_song_uri(song.artist, song.title)
@@ -117,15 +125,15 @@ def main():
         if not song_uri:
             archive_logger.error(f"{song.artist} - {song.title} was not found!")
             continue
-        
-        was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
+        if not dryrun:  #   TODO: Repeating code. Clean up
+            was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
 
-        if was_added:
-            archive_logger.info(
-                f'{song.artist} - {song.title} was added to playlist.')
-
-    total_songs_added = sp._num_playlist_songs(spotify_playlist_id)
-    archive_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
+            if was_added:
+                archive_logger.info(
+                    f'{song.artist} - {song.title} was added to playlist.')
+    if not dryrun: #   TODO: Repeating code. Clean up
+        total_songs_added = sp._num_playlist_songs(spotify_playlist_id)
+        archive_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
 
 
 if __name__ == "__main__":
