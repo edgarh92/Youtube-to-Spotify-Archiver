@@ -4,7 +4,7 @@ import requests
 import os
 from logger import setup_logger
 from urllib.parse import quote
-from utils import fuzzy_match_artist, artist_names_from_result
+from utils import fuzzy_match_artist, artist_names_from_tracks
 from typing import Literal, Any
 
 
@@ -76,18 +76,18 @@ class Spotify:
 
         results = response.json()
 
-        items = results['tracks']['items']
+        tracks_found = results['tracks']['items']
 
-        artist_names = artist_names_from_result(items)
+        artist_names = artist_names_from_tracks(tracks_found)
         track_name = f'{artist}'
         fuzzy_match_artist(
             artist_names=artist_names,
             track_input=track_name)
 
-        if not items:
+        if not tracks_found:
             return None
         else:
-            return items[0]['uri']
+            return tracks_found[0]['uri']
 
     def add_song_to_playlist(self, song_uri: str, playlist_id: str) -> bool:
         url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"

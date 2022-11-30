@@ -4,7 +4,15 @@ from logger import setup_logger
 
 
 utils_logger = setup_logger("utils_logger")
-def artist_names_from_result(items):
+def artist_names_from_tracks(items: dict):
+    """Obtain name from artist in list of tracks
+
+    Args:
+        tracks (dict): tracks returned from Spotify Search API. 
+
+    Returns:
+        artist_names(set): set of item names. 
+    """    
     artist_names = set()
 
     for idx, track in enumerate(items):
