@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
 from thefuzz import process, fuzz
-from logger import setup_logger
+from app_logger import setup_logger
 
 
-utils_logger = setup_logger("utils_logger")
+utils_logger = setup_logger(__name__)
+
 def artist_names_from_tracks(items: dict):
     """Obtain name from artist in list of tracks
 

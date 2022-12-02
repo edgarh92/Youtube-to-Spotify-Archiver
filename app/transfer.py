@@ -3,7 +3,7 @@ from spotify import Spotify
 from youtube import Youtube
 from datetime import datetime
 import argparse
-from logger import setup_logger
+from app_logger import setup_logger
 
 
 def build_ydl_opts(
