@@ -35,9 +35,10 @@ class Spotify:
         self.spotify_logger = setup_logger(__name__)
         print(self.spotify.token)
     def create_playlist(self, playlist_name: str) -> str:
+        year_month = datetime.now().strftime("%Y %m")
         request_body = {
             "name": playlist_name,
-            "description": "youtube playlist",
+            "description": f"Youtube Playlist Imported on: {year_month}",
             "public": False
         }
 

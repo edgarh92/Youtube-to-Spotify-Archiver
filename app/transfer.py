@@ -30,8 +30,11 @@ def build_ydl_opts(
 
 
 def get_args():
-    year_month = datetime.now().strftime("%Y %m")
+    """Source arguments for CLI and returns args as tuples.
 
+    Returns:
+        youtube_url(str), playlist_name(str), ydl_opts(dict), args.dryrun(bool) : Arguments as tuples
+    """    
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--url",
