@@ -24,6 +24,16 @@ def test_get_youtube_songs():
     songs = yt.get_songs_from_playlist(yt_playlist_id)
     assert len(songs) > 0
 
+def test_invalid_id_exception():
+    playlist_id = "30ffs2309xcv"
+    with pytest.raises(Exception):
+        songs = yt.get_songs_from_playlist(playlist_id)
+
+def test_invalid_id_exception():
+    playlist_id = "30ffs2309xcv"
+    with pytest.raises(Exception):
+        songs = yt.get_playlist_title(playlist_id)
+
 def test_fetch_uri():
     songs = yt.get_songs_from_playlist(yt_playlist_id)
     song_uri = sp.get_song_uri(songs[0].artist, songs[0].title)
