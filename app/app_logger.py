@@ -9,7 +9,7 @@ def setup_logger(name: str):
         )
     stdout_formating = logging.Formatter('%(levelname)s - %(message)s')
 
-    file_handler = logging.FileHandler("/tmp/youtube_archiver.log")
+    file_handler = logging.FileHandler(f"/tmp/{name}.log")
     file_handler.setFormatter(stdout_formating)
     file_handler.setLevel(logging.DEBUG)
 
@@ -21,5 +21,6 @@ def setup_logger(name: str):
     logger.addHandler(stream_handler)
     logger.setLevel(logging.DEBUG)
     return logger
+
 
 

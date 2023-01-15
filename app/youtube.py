@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pprint import pprint
 import re
 import os
-
+from app_logger import setup_logger
 
 @dataclass
 class Song:
@@ -76,6 +76,7 @@ class Youtube:
             developerKey=Youtube.DEVELOPER_KEY
         )
         self.ytdl = VideoTitleExtractor(ydl_input_ops)
+        self.yt_logger = setup_logger(__name__)
 
     def __get_artist_title_ytdlp(self, video_id):
         video_info = self.ytdl.get_yt_metadata(video_id)
@@ -89,6 +90,15 @@ class Youtube:
             return None
 
     def __fetch_playlist_name(self, youtube: Resource, playlist_id, page_token=None) -> str:
+        '''
+        Args:
+            youtube (Youtube): Youtube API Class
+            playlist_id (string): String identifier of playlist. 
+            page_token (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            result: contains nextPageToken if more than 300 items were found.
+        '''
         result = youtube.playlists().list(
             part="snippet", 
             id=playlist_id,
@@ -120,15 +130,17 @@ class Youtube:
             maxResults="300",
             pageToken=page_token
         ).execute()
-
         for item in result['items']:
-            song_api_data = item['snippet']['title']
+            api_song_title = item['snippet']['title']
             video_id = item['snippet']['resourceId']['videoId']
-            print(f'Youtube API Info: {song_api_data}, {video_id}')
+            print(
+                f'Youtube API - Title {api_song_title} Video ID {video_id}')
             try:
                 track_info = self.__get_artist_title_ytdlp(
                     video_id,)
                 if not track_info:
+                    self.yt_logger.debug(
+                        f"No track info found - Title {api_song_title} - Video ID {video_id}") 
                     raise YtDlpParseError
                 else:
                     self.songs.append(clean_song_info(
@@ -138,16 +150,17 @@ class Youtube:
                             )
 
             except YtDlpParseError:
-                try:  #  TODO: Handle none for artist. 
-                    artist, title = get_artist_title(song_api_data)
+                try:  # TODO: Handle none for artist. 
+                    artist, title = get_artist_title(api_song_title)
                     if not artist or not title:
                         raise SongInfoNotFound
                     else:
                         self.songs.append(clean_song_info(
                             Song(str(artist), str(title))))
                 except SongInfoNotFound:
-                    print(f'Error parsing Track and Title {song_api_data}')
-                    print(f'Error parsing title {song_api_data}')
+                    print(f'Error parsing Track and Title {api_song_title}')
+                    print(f'Error parsing title {api_song_title}')
+
         return result
 
     def get_songs_from_playlist(self, playlist_id: str):
@@ -178,5 +191,6 @@ class Youtube:
 
 if __name__ == "__main__":
     yt = Youtube()
+    
     print(clean_song_info(Song('Mr. x Probz', 'Waves(Robin Schulz Remix Radio Edit')))
     pprint(yt.get_songs_from_playlist('PLgzTt0k8mXzEpH7-dOCHqRZOsakqXmzmG'))
