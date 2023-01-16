@@ -29,6 +29,23 @@ def build_ydl_opts(
     return ydl_opts
 
 
+def url_to_id(playlist_id: str) -> str:
+    """Extracts youtube id from url. 
+    If url is a playlist, it will return the id only. Does nothing if already an id. 
+
+    Args:
+        url (str): Youtube URL
+
+    Returns:
+        str: Youtube ID
+    """
+    for char in ["list=", "list\\="]:
+        if char in playlist_id:
+            playlist_id = playlist_id.split(char)[1].split("\\&")[0]
+
+    return playlist_id
+    
+
 def get_args():
     """Source arguments for CLI and returns args as tuples.
 
@@ -109,18 +126,19 @@ def main():
     yt = Youtube(ydl_input_ops=ydl_opts)
     archive_logger = setup_logger(__name__)
     
-    yt_playlist_id = youtube_url
-
+    yt_playlist_id = url_to_id(youtube_url)
+    archive_logger.info(f'Playlist ID: {yt_playlist_id}')
     if not playlist_name:
         playlist_name = yt.get_playlist_title(yt_playlist_id)
-    if not dryrun: #   TODO: Repeating code. Clean up
+    
+    if dryrun:
         print("INFO: Dryrun")
+    else:
         spotify_playlist_name = playlist_name
         spotify_playlist_id = sp.create_playlist(spotify_playlist_name)
-    archive_logger.info(f'URL:{youtube_url}')
     
+    archive_logger.info(f'URL:{youtube_url}')
     songs = yt.get_songs_from_playlist(yt_playlist_id)
-
 
     for song in songs:
         song_uri = sp.get_song_uri(song.artist, song.title)
@@ -128,13 +146,17 @@ def main():
         if not song_uri:
             archive_logger.error(f"{song.artist} - {song.title} was not found!")
             continue
-        if not dryrun:  #   TODO: Repeating code. Clean up
-            was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
+        
+        if dryrun:
+            continue
+        
+        was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
 
-            if was_added:
-                archive_logger.info(
-                    f'{song.artist} - {song.title} was added to playlist.')
-    if not dryrun: #   TODO: Repeating code. Clean up
+        if was_added:
+            archive_logger.info(
+                f'{song.artist} - {song.title} was added to playlist.')
+    
+    if not dryrun:
         total_songs_added = sp._num_playlist_songs(spotify_playlist_id)
         archive_logger.info(f'Added {total_songs_added} songs out of {len(songs)}')
 

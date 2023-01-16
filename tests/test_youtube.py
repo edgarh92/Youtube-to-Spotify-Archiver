@@ -1,6 +1,7 @@
 import os, spotipy
 from app.spotify import Spotify
 from app.youtube import Youtube
+from app.main import url_to_id
 import pytest
 
 sp = Spotify()
@@ -20,22 +21,30 @@ ydl_opts = {  # TODO: setup as fixture
 
 yt_playlist_id = "PLnKNmWNuQnyzNywBaSk2nOBpFkIQ0k89v"
 
+
 def test_get_youtube_songs():
     songs = yt.get_songs_from_playlist(yt_playlist_id)
     assert len(songs) > 0
+
 
 def test_invalid_id_exception():
     playlist_id = "30ffs2309xcv"
     with pytest.raises(Exception):
         songs = yt.get_songs_from_playlist(playlist_id)
 
+
 def test_invalid_id_exception():
     playlist_id = "30ffs2309xcv"
     with pytest.raises(Exception):
         songs = yt.get_playlist_title(playlist_id)
 
+
 def test_fetch_uri():
     songs = yt.get_songs_from_playlist(yt_playlist_id)
     song_uri = sp.get_song_uri(songs[0].artist, songs[0].title)
     assert song_uri is not None
-            
+
+
+def test_url_to_id():
+    playlist_id = "https://www.youtube.com/playlist?list=PLnKNmWNuQnyzNywBaSk2nOBpFkIQ0k89v"
+    assert url_to_id(playlist_id) == "PLnKNmWNuQnyzNywBaSk2nOBpFkIQ0k89v"
