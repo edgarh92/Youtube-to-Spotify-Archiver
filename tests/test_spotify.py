@@ -3,10 +3,10 @@ from unittest.mock import patch, MagicMock
 from spotipy import util
 import requests 
 import os
-from app_logger import setup_logger
+from app.tools.app_logger import setup_logger
 from urllib.parse import quote
-from utils import fuzzy_match_artist, artist_names_from_tracks
-from Spotify import Spotify
+from app.tools.utils import fuzzy_match_artist, artist_names_from_tracks
+from app.tools.spotify import Spotify
 
 class TestSpotify:
     @patch.object(util, 'prompt_for_user_token')

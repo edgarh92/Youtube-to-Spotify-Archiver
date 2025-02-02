@@ -1,11 +1,11 @@
 from youtube_title_parse import get_artist_title #  TODO: Handle missing dependency 
 from googleapiclient.discovery import build, Resource
-from ytdlp import VideoTitleExtractor
+from app.tools.ytdlp import VideoTitleExtractor
 from dataclasses import dataclass
 from pprint import pprint
 import re
 import os
-from app_logger import setup_logger
+from app.tools.app_logger import setup_logger
 
 @dataclass
 class Song:
@@ -99,12 +99,14 @@ class Youtube:
         Returns:
             result: contains nextPageToken if more than 300 items were found.
         '''
+        self.yt_logger.debug(f"Fetching playlist name for ID: {playlist_id}")
         result = youtube.playlists().list(
             part="snippet", 
             id=playlist_id,
             maxResults="300",
             pageToken=page_token
         ).execute()
+        self.yt_logger.debug(f"Playlist name result: {result['items'][0]['snippet']['title']}")
         return result['items'][0]['snippet']['title']
 
     def __fetch_songs(self, youtube: Resource, playlist_id, page_token=None):
@@ -123,7 +125,7 @@ class Youtube:
         Returns:
             result: contains nextPageToken if more than 300 items were found. 
         """
-
+        self.yt_logger.debug(f"Fetching songs for playlist: {playlist_id} PageToken: {page_token}")
         result = youtube.playlistItems().list(
             part="snippet", 
             playlistId=playlist_id,
@@ -133,6 +135,7 @@ class Youtube:
         for item in result['items']:
             api_song_title = item['snippet']['title']
             video_id = item['snippet']['resourceId']['videoId']
+            self.yt_logger.debug(f"API Title: {api_song_title}, Video ID: {video_id}")
             print(
                 f'Youtube API - Title {api_song_title} Video ID {video_id}')
             try:
@@ -157,10 +160,10 @@ class Youtube:
                     else:
                         self.songs.append(clean_song_info(
                             Song(str(artist), str(title))))
-                except SongInfoNotFound:
+                except TypeError as SongInfoNotFound:
                     print(f'Error parsing Track and Title {api_song_title}')
                     print(f'Error parsing title {api_song_title}')
-
+        self.yt_logger.debug(f"Fetched {len(result['items'])} items from playlist.")
         return result
 
     def get_songs_from_playlist(self, playlist_id: str):

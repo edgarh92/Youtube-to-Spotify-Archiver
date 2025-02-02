@@ -1,9 +1,9 @@
 from typing import Any
-from spotify import Spotify
-from youtube import Youtube
+from app.tools.spotify import Spotify
+from app.tools.youtube import Youtube
 from datetime import datetime
 import argparse
-from app_logger import setup_logger
+from app.tools.app_logger import setup_logger
 
 
 def build_ydl_opts(
@@ -11,8 +11,19 @@ def build_ydl_opts(
     archive_file: str,
     output_location: str,
     store_json: bool
-        ) -> dict[str, Any]:
-        
+) -> dict[str, Any]:
+    """
+    Build youtube-dl options dictionary.
+
+    Args:
+        cookies_file (str): Path to cookies file.
+        archive_file (str): Path to archive file.
+        output_location (str): Directory to save output files.
+        store_json (bool): Flag to store JSON metadata.
+
+    Returns:
+        dict[str, Any]: Dictionary of youtube-dl options.
+    """
     json_out_format = "/%(playlist_title)s/\
         %(playlist_index)s_%(id)s_%(title)s.%(ext)s"
     ydl_opts = {
@@ -30,14 +41,14 @@ def build_ydl_opts(
 
 
 def url_to_id(playlist_id: str) -> str:
-    """Extracts youtube id from url. 
-    If url is a playlist, it will return the id only. Does nothing if already an id. 
+    """
+    Extract YouTube ID from URL.
 
     Args:
-        url (str): Youtube URL
+        playlist_id (str): YouTube playlist URL or ID.
 
     Returns:
-        str: Youtube ID
+        str: Extracted YouTube ID.
     """
     for char in ["list=", "list\\="]:
         if char in playlist_id:
@@ -47,10 +58,11 @@ def url_to_id(playlist_id: str) -> str:
     
 
 def get_args():
-    """Source arguments for CLI and returns args as tuples.
+    """
+    Parse command-line arguments.
 
     Returns:
-        youtube_url(str), playlist_name(str), ydl_opts(dict), args.dryrun(bool) : Arguments as tuples
+        tuple: Parsed arguments including YouTube URL, playlist name, youtube-dl options, and dry run flag.
     """    
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -104,6 +116,12 @@ def get_args():
         required=True,
         help="Cookies file"
     )
+    parser.add_argument(
+        "--loglevel",
+        type=str,
+        default="INFO",
+        help="Set log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+    )
 
     args = parser.parse_args()
     youtube_url = args.url
@@ -121,24 +139,40 @@ def get_args():
 
 
 def main():
+    """
+    Main function to archive YouTube playlist to Spotify.
+
+    Steps:
+    1. Parse command-line arguments.
+    2. Setup logger.
+    3. Initialize Spotify and YouTube tools.
+    4. Extract playlist ID from URL.
+    5. Retrieve songs from YouTube playlist.
+    6. Add songs to Spotify playlist (if not in dry run mode).
+    """
     youtube_url, playlist_name, ydl_opts, dryrun = get_args()
+    import logging
+    loglevel = logging.getLevelName(ydl_opts.pop('loglevel', 'INFO'))
+    archive_logger = setup_logger(__name__, level=loglevel)
     sp = Spotify()
     yt = Youtube(ydl_input_ops=ydl_opts)
-    archive_logger = setup_logger(__name__)
     
     yt_playlist_id = url_to_id(youtube_url)
     archive_logger.info(f'Playlist ID: {yt_playlist_id}')
     if not playlist_name:
         playlist_name = yt.get_playlist_title(yt_playlist_id)
-    
-    if dryrun:
-        print("INFO: Dryrun")
-    else:
-        spotify_playlist_name = playlist_name
-        spotify_playlist_id = sp.create_playlist(spotify_playlist_name)
+
+        
     
     archive_logger.info(f'URL:{youtube_url}')
     songs = yt.get_songs_from_playlist(yt_playlist_id)
+    archive_logger.debug("Starting main process with loglevel set to " + logging.getLevelName(loglevel))
+
+    if dryrun:
+        archive_logger.info("Dryrun mode enabled. No songs will be added to Spotify.")
+    else:
+        archive_logger.info("Creating Spotify playlist.")
+        spotify_playlist_id = sp.create_playlist(playlist_name)
 
     for song in songs:
         song_uri = sp.get_song_uri(song.artist, song.title)
@@ -149,7 +183,6 @@ def main():
         
         if dryrun:
             continue
-        
         was_added = sp.add_song_to_playlist(song_uri, spotify_playlist_id)
 
         if was_added:
