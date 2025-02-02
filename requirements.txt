@@ -4,3 +4,4 @@ requests==2.25.0
 spotipy==2.16.1
 youtube_title_parse==1.0.0
 yt_dlp==2022.*
+thefuzz==0.22.1

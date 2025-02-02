@@ -1,9 +1,9 @@
 from spotipy import util
 import requests 
 import os
-from app_logger import setup_logger
+from app.tools.app_logger import setup_logger
 from urllib.parse import quote
-from utils import fuzzy_match_artist, artist_names_from_tracks
+from app.tools.utils import fuzzy_match_artist, artist_names_from_tracks
 from typing import Literal, Any
 from datetime import datetime
 

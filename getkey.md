@@ -1,7 +1,7 @@
 ## How to create youtube API key
 
 ### URL
-https://console.developers.google.com/
+https://console.cloud.google.com/
 
 ### Create project
 ![](imgs/create.png)
