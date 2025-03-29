@@ -9,7 +9,7 @@ def ydl_opts():
     return {
         "cookiefile": "/Users/ehernand/Downloads/www.youtube.com_cookies.txt",
         "download_archive": "archive_file",
-        "outtmpl": "/tmp/%(title)s.%(ext)s",
+        "outtmpl": "./logs/%(title)s.%(ext)s",
         "quiet": True,
         "ignoreerrors": True,
         "writeinfojson": False,
