@@ -159,6 +159,8 @@ def main():
     playlist_description = yt.get_playlist_description(yt_playlist_id)
     if not playlist_description:
         playlist_description = f"YouTube playlist imported on {datetime.now().strftime('%Y-%m-%d')}"
+    # Spotify has a 300 char limit for descriptions; truncate the YT description if necessary
+    playlist_description = playlist_description[:300]
 
     # Retrieve music information from the YouTube playlist
     archive_logger.info(f"URL:{youtube_url}")

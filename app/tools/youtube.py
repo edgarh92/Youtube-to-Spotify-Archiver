@@ -31,7 +31,7 @@ class YtDlpParseError(Error):
     pass
 
 
-class SongInfoNotFound(Error):
+class SongInfoNotFoundError(Error):
     """Raised when no artist or song info is found"""
 
     pass
@@ -209,14 +209,13 @@ class Youtube:
                 try:  # TODO: Handle none for artist.
                     artist, title = get_artist_title(api_song_title)
                     if not artist or not title:
-                        raise SongInfoNotFound
+                        raise SongInfoNotFoundError
                     else:
                         self.songs.append(
                             clean_song_info(Song(str(artist), str(title)))
                         )
-                except TypeError as SongInfoNotFound:
+                except (TypeError, SongInfoNotFoundError):
                     print(f"Error parsing Track and Title {api_song_title}")
-                    print(f"Error parsing title {api_song_title}")
         self.yt_logger.debug(f"Fetched {len(result['items'])} items from playlist.")
         return result
 
