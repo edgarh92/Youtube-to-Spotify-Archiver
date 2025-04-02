@@ -1,8 +1,10 @@
+from tools.app_logger import setup_logger
 import yt_dlp
-from app.tools.app_logger import setup_logger
+
 
 class MetaDataNotAvailable(Exception):
     pass
+
 
 class VideoTitleExtractor:
 
@@ -12,7 +14,7 @@ class VideoTitleExtractor:
         self.logger = setup_logger(__name__)
 
     def process_video_track(self, video_item: dict) -> tuple:
-        '''Process a dictionary of metadata and return None or song_name, artist'''
+        """Process a dictionary of metadata and return None or song_name, artist"""
         try:
             if video_item is None:
                 raise MetaDataNotAvailable
@@ -20,7 +22,7 @@ class VideoTitleExtractor:
                 song_name = video_item["track"]
                 artist = video_item["artist"]
                 return str(artist), str(song_name)
-           
+
         except (KeyError, MetaDataNotAvailable) as EmptyValue:
             return None, None
 
@@ -32,12 +34,11 @@ class VideoTitleExtractor:
 
         Returns:
             dict: ytdlp response
-        """        
-        youtube_url = f'https://www.youtube.com/watch?v={video_id}'
+        """
+        youtube_url = f"https://www.youtube.com/watch?v={video_id}"
         self.logger.debug(f"Extracting metadata for video ID: {video_id}")
         video_info = yt_dlp.YoutubeDL(self.yt_opts).extract_info(
-                        youtube_url, download=True)
+            youtube_url, download=True
+        )
         self.logger.debug(f"Metadata extraction complete for: {video_id}")
         return video_info
-
-
